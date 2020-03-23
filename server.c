@@ -59,10 +59,6 @@
         serv_addr.sin_port = htons(PORT);
         serv_addr.sin_addr.s_addr = INADDR_ANY;
 
-     cli_addr.sin_family = AF_INET;
-     cli_addr.sin_addr.s_addr = inet_addr("192.168.2.177");
-     cli_addr.sin_port = htons(portno);
-
         if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
             error("ERROR on binding");
         printf("Binding done...\n");
