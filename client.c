@@ -11,6 +11,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+char* hostname = "192.168.2.177"; 
+
 void dostuff(int); /* function prototype */
 void error(char *msg)
 {
@@ -28,18 +30,23 @@ int main(int argc, char *argv[])
          exit(1);
      }
      sockfd = socket(AF_INET, SOCK_STREAM, 0);
+     //setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&serv_addr,sizeof(serv_addr));
      if (sockfd < 0) 
         error("ERROR opening socket");
      memset(&serv_addr, 0, sizeof(serv_addr));
-     portno = atoi(argv[1]);
+     portno = 4567;//atoi(argv[1]);
      serv_addr.sin_family = AF_INET;
-     serv_addr.sin_addr.s_addr = INADDR_ANY;
      serv_addr.sin_port = htons(portno);
-     if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
+     serv_addr.sin_addr.s_addr = INADDR_ANY;//INADDR_ANY;//inet_addr("192.168.2.244");
+     cli_addr.sin_family = AF_INET;
+     cli_addr.sin_addr.s_addr = inet_addr("192.168.2.244");
+     cli_addr.sin_port = htons(portno);
+     printf("yeet");
+     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
               error("ERROR on binding");
-     listen(sockfd,5);
+     int yeet = listen(sockfd,5);
+     printf("%d", yeet);
      clilen = sizeof(cli_addr);
-
 
      while (1) {
          newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
