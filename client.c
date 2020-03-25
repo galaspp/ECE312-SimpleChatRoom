@@ -236,8 +236,7 @@ void readData(int socket)
         error("ERROR reading from socket");
     if(n > 0)
     {
-      printf("\n<%s> %s\n", name, buffer);
-      printf("<you> ");  
+      printf("\n<%s> %s\n<you> ", name, buffer);  
     } 
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='z') && (buffer[4]=='\n'))
     {
