@@ -184,6 +184,7 @@ int main(int argc, char *argv[])
     n = read(sockfd,name,255);
     if (n < 0) 
          error("ERROR reading from socket");
+     name[strlen(name) - 1] = '\0';
 
     // bzero(buffer,256);
     // fgets(buffer,255,stdin);
@@ -254,7 +255,7 @@ void writeData(int socket)
     n = write(socket,buffer,strlen(buffer));
     if (n < 0) 
         error("ERROR writing to socket");
-    printf("%s\n", buffer);
+   // printf("%s\n", buffer);
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='z') && (buffer[4]=='\n'))
     {
       quitMessageRecieved = true;
