@@ -166,10 +166,10 @@ int main(int argc, char *argv[])
      inet_ntop(AF_INET, &(cli_addr.sin_addr), clientAddr, CLADDR_LEN);
      printf("Connection accepted from %s...\n", clientAddr);  
 
-    n = write(sockfd,buffer,strlen(buffer));
+    n = write(newsockfd,buffer,strlen(buffer));
     if (n < 0) 
          error("ERROR writing to socket");
-    n = read(sockfd,name,strlen(name));
+    n = read(newsockfd,name,strlen(name));
     if (n < 0) 
          error("ERROR reading from socket");
 
@@ -187,14 +187,15 @@ int main(int argc, char *argv[])
 
    if(pid == 0)
    {
-     readData(sockfd);
+     readData(newsockfd);
      exit(1);
    }
    else
    {
-     writeData(sockfd);
+     writeData(newsockfd);
    }
      wait(&status);
+     close(newsockfd);
     close(sockfd);
      return 0; 
 }
