@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
     n = write(newsockfd,buffer,strlen(buffer));
     if (n < 0) 
          error("ERROR writing to socket");
-    n = read(newsockfd,name,strlen(name));
+    n = read(newsockfd,name,255);
     if (n < 0) 
          error("ERROR reading from socket");
 
