@@ -211,7 +211,11 @@ void readData(int socket)
     n = read(socket,buffer,255);
     if (n < 0) 
         error("ERROR reading from socket");
-    if(n > 0) printf("\n<%s> %s\n", name, buffer);
+    if(n > 0)
+    {
+        printf("\n<%s> %s\n", name, buffer);
+        printf("<you> ");  
+    } 
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='z') && (buffer[4]=='\n'))
     {
       quitMessageRecieved = true;
