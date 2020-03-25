@@ -233,7 +233,7 @@ void readData(int socket)
     n = read(socket,buffer,255);
     if (n < 0) 
         error("ERROR reading from socket");
-    printf("<%s> %s\n", name, buffer);
+    if(n > 0) printf("<%s> %s\n", name, buffer);
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='z') && (buffer[4]=='\n'))
     {
       quitMessageRecieved = true;
@@ -253,7 +253,7 @@ void writeData(int socket)
     n = write(socket,buffer,strlen(buffer));
     if (n < 0) 
         error("ERROR writing to socket");
-    printf("%s\n", buffer);
+    if(n > 0) printf("%s\n", buffer);
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='z') && (buffer[4]=='\n'))
     {
       quitMessageRecieved = true;
