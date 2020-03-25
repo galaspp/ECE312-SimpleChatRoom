@@ -225,7 +225,7 @@ void writeData(int socket)
   char buffer[256];
   while(!quitMessageRecieved)
   {
-    printf("<you> ");
+    if(n > 0) printf("<you> ");
     bzero(buffer,256);
     n = write(socket,buffer,strlen(buffer));
     if (n < 0) 
