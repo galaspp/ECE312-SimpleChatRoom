@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
      writeData(sockfd);
    }
      wait(&status);
+    printf("Connection accepted from %s...\n", clientAddr);  
     close(sockfd);
     return 0;
 }
@@ -236,9 +237,8 @@ void readData(int socket)
         error("ERROR reading from socket");
     if(n > 0)
     {
-      printf("\n<%s> %s\n ", name, buffer); 
       fflush( stdout );   
-      printf("<you> ");
+      printf("\n<%s> %s\n<you> ", name, buffer); 
     } 
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
@@ -256,7 +256,8 @@ void writeData(int socket)
   {
     printf("<you> ");
     bzero(buffer,256);
-    fgets(buffer,255,stdin);
+    //fgets(buffer,255,stdin);
+    while(fgets(buffer,255,stdin)==NULL && !quitMessageRecieved);
     n = write(socket,buffer,strlen(buffer));
     if (n < 0) 
         error("ERROR writing to socket");
