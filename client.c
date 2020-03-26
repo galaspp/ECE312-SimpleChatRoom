@@ -90,6 +90,7 @@
 //    n = write(sock,"I got your message",18);
 //    if (n < 0) error("ERROR writing to socket");
 // }
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -97,6 +98,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <unistd.h>
+#include <sys/wait.h>
 
 void writeData(int socket);
 void readData(int socket);
@@ -114,6 +117,11 @@ void error(char *msg)
     exit(0);
 }
 
+void childSignalHandler(int sig)
+{
+    quitMessageRecieved = true;
+}
+
 int main(int argc, char *argv[])
 {
     int sockfd, portno, n;
@@ -126,6 +134,7 @@ int main(int argc, char *argv[])
     bzero(buffer,256);
     bzero(name,256);
 
+  signal(SIGCHLD, childSignalHandler);
     printf("Please enter the host (default or new): ");
     fgets(buffer,255,stdin);
     if((buffer[0] == 'd') || (buffer[0] == 'D'))
@@ -212,9 +221,10 @@ int main(int argc, char *argv[])
    else
    {
      writeData(sockfd);
+     kill(0, SIGTERM);
    }
-     wait(&status);
-    printf("Connection accepted from %s...\n", clientAddr);  
+     //wait(&status);
+    printf("Connection closed from %s...\n", clientAddr);  
     close(sockfd);
     return 0;
 }
@@ -242,7 +252,6 @@ void readData(int socket)
     } 
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
-      quitMessageRecieved = true;
       break;
     }
   }
@@ -264,7 +273,6 @@ void writeData(int socket)
    // printf("%s\n", buffer);
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
-      quitMessageRecieved = true;
       break;
     }
   }

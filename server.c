@@ -88,11 +88,14 @@
 
 /* A simple server in the internet domain using TCP
    The port number is passed as an argument */
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #define CLADDR_LEN 100  
 #define PORT 4567
@@ -107,6 +110,11 @@ void error(char *msg)
     exit(1);
 }
 
+void childSignalHandler(int sig)
+{
+    quitMessageRecieved = true;
+}
+
 int main(int argc, char *argv[])
 {
      int sockfd, newsockfd, portno, clilen;
@@ -115,6 +123,7 @@ int main(int argc, char *argv[])
      struct sockaddr_in serv_addr, cli_addr;
      int n;
 
+    signal(SIGCHLD, childSignalHandler);
     printf("Please enter the host (default or new): ");
     fgets(buffer,255,stdin);
     if((buffer[0] == 'd') || (buffer[0] == 'D'))
@@ -194,8 +203,9 @@ int main(int argc, char *argv[])
    else
    {
      writeData(newsockfd);
+     kill(0, SIGTERM);
    }
-     wait(&status);
+     //wait(&status);
      printf("Connection closed from %s...\n", clientAddr);  
      close(newsockfd);
     close(sockfd);
