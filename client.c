@@ -184,8 +184,7 @@ int main(int argc, char *argv[])
     if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) 
         error("ERROR connecting");
 
-    inet_ntop(AF_INET, &(serv_addr.sin_addr), clientAddr, CLADDR_LEN);
-    printf("Connection accepted from %s...\n", clientAddr);  
+    inet_ntop(AF_INET, &(serv_addr.sin_addr), clientAddr, CLADDR_LEN); 
 
     n = write(sockfd,buffer,strlen(buffer));
     if (n < 0) 
@@ -194,6 +193,7 @@ int main(int argc, char *argv[])
     if (n < 0) 
          error("ERROR reading from socket");
      name[strlen(name) - 1] = '\0';
+    printf("Connection accepted from %s...\n You are talking to %s\n", clientAddr, name); 
 
     // bzero(buffer,256);
     // fgets(buffer,255,stdin);
@@ -206,6 +206,7 @@ int main(int argc, char *argv[])
     // if (n < 0) 
     //      error("ERROR reading from socket");
     // printf("%s\n",buffer);
+   int pid1;
    int pid = fork();
    if (pid < 0) 
    {
@@ -220,11 +221,17 @@ int main(int argc, char *argv[])
    }
    else
    {
-     writeData(sockfd);
-     kill(0, SIGTERM);
+     pid1 = fork();
+     if(pid1 == 0)
+     {
+       writeData(sockfd);
+       exit(1);
+     }
    }
-     //wait(&status);
-    printf("Connection closed from %s...\n", clientAddr);  
+    while(!quitMessageRecieved);
+    kill(pid, SIGTERM);
+    kill(pid1, SIGTERM);
+    printf("\nConnection closed by %s... or %s\n", clientAddr, name);  
     close(sockfd);
     return 0;
 }
@@ -246,9 +253,9 @@ void readData(int socket)
     if (n < 0) 
         error("ERROR reading from socket");
     if(n > 0)
-    {
-      fflush( stdout );   
-      printf("\n<%s> %s\n<you> ", name, buffer); 
+    {  
+      printf("\n<%s> %s<you> ", name, buffer); 
+      fflush( stdout ); 
     } 
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
@@ -266,13 +273,14 @@ void writeData(int socket)
     printf("<you> ");
     bzero(buffer,256);
     //fgets(buffer,255,stdin);
-    while(fgets(buffer,255,stdin)==NULL && !quitMessageRecieved);
+    fgets(buffer,255,stdin);
     n = write(socket,buffer,strlen(buffer));
     if (n < 0) 
         error("ERROR writing to socket");
    // printf("%s\n", buffer);
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
+      quitMessageRecieved = true;
       break;
     }
   }

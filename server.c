@@ -173,7 +173,6 @@ int main(int argc, char *argv[])
      //bzero(buffer,256);
 
      inet_ntop(AF_INET, &(cli_addr.sin_addr), clientAddr, CLADDR_LEN);
-     printf("Connection accepted from %s...\n", clientAddr);  
 
     n = write(newsockfd,buffer,strlen(buffer));
     if (n < 0) 
@@ -182,12 +181,14 @@ int main(int argc, char *argv[])
     if (n < 0) 
          error("ERROR reading from socket");
      name[strlen(name) - 1] = '\0';
+     printf("Connection accepted from %s...\n You are talking to %s\n", clientAddr, name);
 
      // n = read(newsockfd,buffer,255);
      // if (n < 0) error("ERROR reading from socket");
      // printf("Here is the message: %s\n",buffer);
      // n = write(newsockfd,"I got your message",18);
      // if (n < 0) error("ERROR writing to socket");
+    int pid1;
     int pid = fork();
    if (pid < 0) 
    {
@@ -202,11 +203,17 @@ int main(int argc, char *argv[])
    }
    else
    {
-     writeData(newsockfd);
-     kill(0, SIGTERM);
+    pid1 = fork();
+    if(pid1 == 0)
+    {
+      writeData(newsockfd);
+      exit(1);
+    }
    }
-     //wait(&status);
-     printf("Connection closed from %s...\n", clientAddr);  
+    while(!quitMessageRecieved);
+    kill(pid, SIGTERM);
+    kill(pid1, SIGTERM);
+     printf("\nConnection closed by %s... or %s\n", clientAddr, name);  
      close(newsockfd);
     close(sockfd);
      return 0; 
@@ -224,8 +231,9 @@ void readData(int socket)
         error("ERROR reading from socket");
     if(n > 0)
     {
-        fflush( stdout );  
         printf("\n<%s> %s\n<you>  ", name, buffer);
+        fflush( stdout );  
+
     } 
     if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
@@ -243,7 +251,7 @@ void writeData(int socket)
   {
     printf("<you> ");
     bzero(buffer,256);
-    while(fgets(buffer,255,stdin)==NULL && !quitMessageRecieved);
+    fgets(buffer,255,stdin);
     n = write(socket,buffer,strlen(buffer));
     if (n < 0) 
         error("ERROR writing to socket");
