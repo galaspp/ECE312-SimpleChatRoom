@@ -213,9 +213,11 @@ void readData(int socket)
         error("ERROR reading from socket");
     if(n > 0)
     {
-        printf("\n<%s> %s\n<you> ", name, buffer);  
+        printf("\n<%s> %s\n ", name, buffer);
+        fflush( stdout );  
+        printf("<you> ");
     } 
-    if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='z'))
+    if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
       quitMessageRecieved = true;
       break;
@@ -236,7 +238,7 @@ void writeData(int socket)
     if (n < 0) 
         error("ERROR writing to socket");
    // printf("%s\n", buffer);
-    if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='z'))
+    if((buffer[0]=='q') && (buffer[1]=='u') && (buffer[2]=='i') && (buffer[3]=='t'))
     {
       quitMessageRecieved = true;
       break;
