@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
       printf("Invalid Option ");
       return 0;
     }
-
+    printf("Waiting for connection...\n");
     // if (argc < 3) {
     //    fprintf(stderr,"usage %s hostname port\n", argv[0]);
     //    exit(0);

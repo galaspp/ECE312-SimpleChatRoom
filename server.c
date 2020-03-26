@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
       printf("Invalid Option ");
       return 0;
     }
+    printf("Waiting for connection...\n");
      // if (argc < 2) {
      //     fprintf(stderr,"ERROR, no port provided\n");
      //     exit(1);
@@ -231,7 +232,7 @@ void readData(int socket)
         error("ERROR reading from socket");
     if(n > 0)
     {
-        printf("\n<%s> %s\n<you>  ", name, buffer);
+        printf("\n<%s> %s<you>  ", name, buffer);
         fflush( stdout );  
 
     } 
