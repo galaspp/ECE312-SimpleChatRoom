@@ -110,6 +110,7 @@ char *hostname = "192.168.2.244";
 char name[256];
 int status;
 bool quitMessageRecieved = false;
+bool isConfigured = false;
 
 void error(char *msg)
 {
@@ -137,30 +138,42 @@ int main(int argc, char *argv[])
   signal(SIGCHLD, childSignalHandler);
     printf("Please enter the host (default or new): ");
     fgets(buffer,255,stdin);
+  while(!isConfigured)
+  {
     if((buffer[0] == 'd') || (buffer[0] == 'D'))
-    {
-      portno = PORT;
-      server = gethostbyname(hostname);
-      printf("Please enter your name: ");
-      bzero(buffer,256);
-      fgets(buffer,255,stdin);
+      {
+        portno = PORT;
+        server = gethostbyname(hostname);
+        printf("Please enter your name: ");
+        bzero(buffer,256);
+        fgets(buffer,255,stdin);
+        isConfigured = true;
+      }
+      else if((buffer[0] == 'n') || buffer[0] == 'N')
+      {
+        printf("Please enter the host port: ");
+        bzero(buffer,256);
+        fgets(buffer,255,stdin);
+        portno = atoi(buffer);
+        printf("Please enter the host ip: ");
+        bzero(buffer,256);
+        fgets(buffer,255,stdin);
+        buffer[strlen(buffer) - 1] = '\0';
+        hostname = buffer;
+        server = gethostbyname(hostname);
+        printf("Please enter your name: ");
+        bzero(buffer,256);
+        fgets(buffer,255,stdin);
+        isConfigured = true;
+      }
+      else 
+      {
+        printf("Invalid Option. Please enter the host (default or new):");
+        bzero(buffer,256);
+        fgets(buffer,255,stdin);
+      }
     }
-    else if((buffer[0] == 'n') || buffer[0] == 'N')
-    {
-      printf("Please enter the host port: ");
-      bzero(buffer,256);
-      fgets(buffer,255,stdin);
-      portno = atoi(buffer);
-      printf("Please enter the host ip: ");
-      bzero(buffer,256);
-      fgets(buffer,255,stdin);
-      server = gethostbyname(buffer);
-    }
-    else 
-    {
-      printf("Invalid Option ");
-      return 0;
-    }
+
     printf("Waiting for connection...\n");
     // if (argc < 3) {
     //    fprintf(stderr,"usage %s hostname port\n", argv[0]);
@@ -231,17 +244,11 @@ int main(int argc, char *argv[])
     while(!quitMessageRecieved);
     kill(pid, SIGTERM);
     kill(pid1, SIGTERM);
-    printf("\nConnection closed by %s... or %s\n", clientAddr, name);  
+    printf("\nConnection closed to %s...\n", clientAddr);  
     close(sockfd);
     return 0;
 }
 
-/*
- Ideas right now:
- fork reading to child, once a quit signal is recieved set a flag and do a graceful exit and disconnect. 
- if a quit is being set a flag for child to exit.
- I do not think zombies matter because I will not have more then 1 child at a time.
-*/
 void readData(int socket) 
 {
   int n;

@@ -99,10 +99,11 @@
 
 #define CLADDR_LEN 100  
 #define PORT 4567
-//char *hostname = "192.168.2.244";
+
 char name[256];
 int status;
 bool quitMessageRecieved = false;
+bool isConfigured = false;
 
 void error(char *msg)
 {
@@ -126,29 +127,33 @@ int main(int argc, char *argv[])
     signal(SIGCHLD, childSignalHandler);
     printf("Please enter the host (default or new): ");
     fgets(buffer,255,stdin);
-    if((buffer[0] == 'd') || (buffer[0] == 'D'))
-    {
-      portno = PORT;
-     // server = gethostbyname(hostname);
-      printf("Please enter your name: ");
-      bzero(buffer,256);
-      fgets(buffer,255,stdin);
-    }
-    else if((buffer[0] == 'n') || buffer[0] == 'N')
-    {
-      printf("Please enter the host port: ");
-      bzero(buffer,256);
-      fgets(buffer,255,stdin);
-      portno = atoi(buffer);
-      // printf("Please enter the host ip: ");
-      // bzero(buffer,256);
-      // fgets(buffer,255,stdin);
-      // server = gethostbyname(buffer);
-    }
-    else 
-    {
-      printf("Invalid Option ");
-      return 0;
+    while(!isConfigured)
+    {    
+        if((buffer[0] == 'd') || (buffer[0] == 'D'))
+        {
+          portno = PORT;
+          printf("Please enter your name: ");
+          bzero(buffer,256);
+          fgets(buffer,255,stdin);
+          isConfigured = true;
+        }
+        else if((buffer[0] == 'n') || buffer[0] == 'N')
+        {
+          printf("Please enter the host port: ");
+          bzero(buffer,256);
+          fgets(buffer,255,stdin);
+          portno = atoi(buffer);
+          printf("Please enter your name: ");
+          bzero(buffer,256);
+          fgets(buffer,255,stdin);
+          isConfigured = true;
+        }
+        else 
+        {
+          printf("Invalid Option. Please enter the host (default or new):");
+          bzero(buffer,256);
+          fgets(buffer,255,stdin);
+        }
     }
     printf("Waiting for connection...\n");
      // if (argc < 2) {
@@ -214,7 +219,7 @@ int main(int argc, char *argv[])
     while(!quitMessageRecieved);
     kill(pid, SIGTERM);
     kill(pid1, SIGTERM);
-     printf("\nConnection closed by %s... or %s\n", clientAddr, name);  
+     printf("\nConnection closed to %s...\n", clientAddr);  
      close(newsockfd);
     close(sockfd);
      return 0; 
