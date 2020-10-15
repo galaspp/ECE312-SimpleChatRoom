@@ -1,5 +1,5 @@
 /*
-Name: Piotr Galas and Carson Meyer
+Name: Piotr and Carson 
 Date: 26 March 2020
 Class: ECE312-Communication Networks
 Description: This is client.c. This program contains a chat program where the 
